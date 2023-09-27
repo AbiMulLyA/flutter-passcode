@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -39,21 +40,36 @@ class Keyboard extends StatelessWidget {
 
   //should have a proper order [1...9, 0]
   final List<String>? digits;
+  final Widget deleteButtonWidget;
 
   Keyboard({
     Key? key,
     required this.keyboardUIConfig,
     required this.onKeyboardTap,
     this.digits,
+    required this.deleteButtonWidget,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => _buildKeyboard(context);
 
   Widget _buildKeyboard(BuildContext context) {
-    List<String> keyboardItems = List.filled(10, '0');
+    List<String> keyboardItems = List.filled(12, '0');
     if (digits == null || digits!.isEmpty) {
-      keyboardItems = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+      keyboardItems = [
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '',
+        '0',
+        'delete'
+      ];
     } else {
       keyboardItems = digits!;
     }
@@ -78,7 +94,8 @@ class Keyboard extends StatelessWidget {
               onKeyboardTap(event.logicalKey.keyLabel);
               return;
             }
-            if (event.logicalKey.keyLabel== 'Backspace' || event.logicalKey.keyLabel == 'Delete') {
+            if (event.logicalKey.keyLabel == 'Backspace' ||
+                event.logicalKey.keyLabel == 'Delete') {
               onKeyboardTap(Keyboard.deleteButton);
               return;
             }
@@ -86,7 +103,7 @@ class Keyboard extends StatelessWidget {
         },
         child: AlignedGrid(
           keyboardSize: keyboardSize,
-          children: List.generate(10, (index) {
+          children: List.generate(12, (index) {
             return _buildKeyboardDigit(keyboardItems[index]);
           }),
         ),
@@ -95,42 +112,55 @@ class Keyboard extends StatelessWidget {
   }
 
   Widget _buildKeyboardDigit(String text) {
-    return Container(
-      margin: EdgeInsets.all(4),
-      child: ClipOval(
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            splashColor: keyboardUIConfig.primaryColor.withOpacity(0.4),
-            onTap: () {
-              onKeyboardTap(text);
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.transparent,
-                border: Border.all(
-                    color: keyboardUIConfig.primaryColor,
-                    width: keyboardUIConfig.digitBorderWidth),
-              ),
+    if (text != '' && text != 'delete') {
+      return Container(
+        margin: EdgeInsets.all(4),
+        child: ClipOval(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              splashColor: keyboardUIConfig.primaryColor.withOpacity(0.4),
+              onTap: () {
+                onKeyboardTap(text);
+              },
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: keyboardUIConfig.digitFillColor,
+                  color: Colors.transparent,
+                  border: Border.all(
+                      color: keyboardUIConfig.primaryColor,
+                      width: keyboardUIConfig.digitBorderWidth),
                 ),
-                child: Center(
-                  child: Text(
-                    text,
-                    style: keyboardUIConfig.digitTextStyle,
-                    semanticsLabel: text,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: keyboardUIConfig.digitFillColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      text,
+                      style: keyboardUIConfig.digitTextStyle,
+                      semanticsLabel: text,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      if (text == 'delete') {
+        return GestureDetector(
+          child: deleteButtonWidget,
+          onTap: () {
+            onKeyboardTap(text);
+          },
+        );
+      } else {
+        return SizedBox();
+      }
+    }
   }
 }
 

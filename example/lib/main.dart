@@ -128,6 +128,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             digits: digits,
             passwordDigits: 6,
             bottomWidget: _buildPasscodeRestoreButton(),
+            deleteButtonWidget: Image.asset('assets/delete.png'),
           ),
         ));
   }

@@ -1,9 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 library passcode_screen;
 
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:passcode_screen/circle.dart';
 import 'package:passcode_screen/keyboard.dart';
 import 'package:passcode_screen/shake_curve.dart';
@@ -14,6 +16,7 @@ typedef CancelCallback = void Function();
 
 class PasscodeScreen extends StatefulWidget {
   final Widget title;
+  final Widget deleteButtonWidget;
   final int passwordDigits;
   final PasswordEnteredCallback passwordEnteredCallback;
   // Cancel button and delete button will be switched based on the screen state
@@ -33,18 +36,19 @@ class PasscodeScreen extends StatefulWidget {
 
   PasscodeScreen({
     Key? key,
+    CircleUIConfig? circleUIConfig,
+    KeyboardUIConfig? keyboardUIConfig,
     required this.title,
+    required this.deleteButtonWidget,
     this.passwordDigits = 6,
     required this.passwordEnteredCallback,
     required this.cancelButton,
     required this.deleteButton,
     required this.shouldTriggerVerification,
     this.isValidCallback,
-    CircleUIConfig? circleUIConfig,
-    KeyboardUIConfig? keyboardUIConfig,
-    this.bottomWidget,
-    this.backgroundColor,
     this.cancelCallback,
+    this.backgroundColor,
+    this.bottomWidget,
     this.digits,
   })  : circleUIConfig = circleUIConfig ?? const CircleUIConfig(),
         keyboardUIConfig = keyboardUIConfig ?? const KeyboardUIConfig(),
@@ -124,12 +128,12 @@ class _PasscodeScreenState extends State<PasscodeScreen>
               ),
             ),
           ),
-          Positioned(
+          /*Positioned(
             child: Align(
               alignment: Alignment.bottomRight,
               child: _buildDeleteButton(),
             ),
-          ),
+          ),*/
         ],
       );
 
@@ -193,6 +197,7 @@ class _PasscodeScreenState extends State<PasscodeScreen>
           onKeyboardTap: _onKeyboardButtonPressed,
           keyboardUIConfig: widget.keyboardUIConfig,
           digits: widget.digits,
+          deleteButtonWidget: widget.deleteButtonWidget,
         ),
       );
 
@@ -229,7 +234,7 @@ class _PasscodeScreenState extends State<PasscodeScreen>
   }
 
   _onKeyboardButtonPressed(String text) {
-    if (text == Keyboard.deleteButton) {
+    if (text == Keyboard.deleteButton || text == 'delete') {
       _onDeleteCancelButtonPressed();
       return;
     }
